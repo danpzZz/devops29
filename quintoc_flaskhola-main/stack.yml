@@ -1,0 +1,30 @@
+version: '3.8'
+
+services: 
+  appdp:
+    image: "imagen de la aplicacion"
+    ports: 
+      -taget: 5000
+      published: 7000
+      protocol: tcp
+      mode: host
+    networks:
+      - traefik-piblic
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.appdp.entrypoints=http"
+        - "traefik.http.routers.appdp.rule=Host(`appdp.byronrm.com`)"
+        - "traefik.http.middlewares.appdp-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.appdp.middlewares=portainer-https-redirect"
+        - "traefik.http.routers.appdp-secure.entrypoints=https"
+        - "traefik.http.routers.appdp-secure.rule=Host(`appdp.byronrm.com`)"
+        - "traefik.http.routers.appdp-secure.tls=true"
+        - "traefik.http.routers.appdp-secure.tls.certresolver=http"
+        - "traefik.http.routers.appdp-secure.service=appdp"
+        - "traefik.http.services.appdp.loadbalancer.server.port=7000"
+        - "traefik.docker.network=traefik-public"
+    networks:
+      traefik-public
+        external: public
+        
